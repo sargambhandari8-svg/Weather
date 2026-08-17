@@ -4,269 +4,128 @@ import ForeCastDay from "./components/ForeCastDay";
 import Weatger from "./components/Weatger";
 import "./App.css";
 
-const nepalPlaces = {
-  kathmandu: {
-    name: "Kathmandu",
-    temperature: 27,
+const weatherTypes = [
+  {
     condition: "Sunny",
     icon: "☀️",
-    feelsLike: 28,
-    humidity: 45,
-    wind: 3.2,
-    pressure: 1012,
   },
-
-  pokhara: {
-    name: "Pokhara",
-    temperature: 24,
+  {
     condition: "Rainy",
     icon: "🌧️",
-    feelsLike: 25,
-    humidity: 72,
-    wind: 4.5,
-    pressure: 1008,
   },
-
-  lalitpur: {
-    name: "Lalitpur",
-    temperature: 26,
+  {
     condition: "Cloudy",
     icon: "☁️",
-    feelsLike: 27,
-    humidity: 60,
-    wind: 2.8,
-    pressure: 1010,
   },
-
-  bhaktapur: {
-    name: "Bhaktapur",
-    temperature: 25,
+  {
     condition: "Partly Cloudy",
     icon: "🌤️",
-    feelsLike: 26,
-    humidity: 55,
-    wind: 3.1,
-    pressure: 1013,
   },
+];
 
-  biratnagar: {
-    name: "Biratnagar",
-    temperature: 31,
-    condition: "Sunny",
-    icon: "☀️",
-    feelsLike: 34,
-    humidity: 65,
-    wind: 2.4,
-    pressure: 1009,
-  },
+function generateWeather(placeName) {
+  // Create a number from the place name.
+  // This makes the same place always get the same
+  // prototype weather instead of changing randomly.
+  let total = 0;
 
-  bharatpur: {
-    name: "Bharatpur",
-    temperature: 29,
-    condition: "Cloudy",
-    icon: "☁️",
-    feelsLike: 31,
-    humidity: 68,
-    wind: 3.5,
-    pressure: 1011,
-  },
+  for (let i = 0; i < placeName.length; i++) {
+    total += placeName.charCodeAt(i);
+  }
 
-  chitwan: {
-    name: "Chitwan",
-    temperature: 30,
-    condition: "Rainy",
-    icon: "🌧️",
-    feelsLike: 33,
-    humidity: 75,
-    wind: 3.8,
-    pressure: 1007,
-  },
+  const temperature = 15 + (total % 25);
 
-  butwal: {
-    name: "Butwal",
-    temperature: 29,
-    condition: "Sunny",
-    icon: "☀️",
-    feelsLike: 31,
-    humidity: 50,
-    wind: 2.9,
-    pressure: 1014,
-  },
+  const weatherIndex = total % weatherTypes.length;
 
-  nepalgunj: {
-    name: "Nepalgunj",
-    temperature: 33,
-    condition: "Hot",
-    icon: "🌞",
-    feelsLike: 36,
-    humidity: 42,
-    wind: 2.1,
-    pressure: 1006,
-  },
+  const weather = weatherTypes[weatherIndex];
 
-  dharan: {
-    name: "Dharan",
-    temperature: 28,
-    condition: "Cloudy",
-    icon: "☁️",
-    feelsLike: 30,
-    humidity: 63,
-    wind: 3.2,
-    pressure: 1010,
-  },
+  return {
+    name: placeName,
+    temperature,
+    feelsLike: temperature + 1,
+    condition: weather.condition,
+    icon: weather.icon,
+    humidity: 40 + (total % 45),
+    wind: Number(
+      (2 + (total % 40) / 10).toFixed(1)
+    ),
+    pressure: 1000 + (total % 20),
+  };
+}
 
-  janakpur: {
-    name: "Janakpur",
-    temperature: 32,
-    condition: "Sunny",
-    icon: "☀️",
-    feelsLike: 35,
-    humidity: 48,
-    wind: 2.6,
-    pressure: 1008,
-  },
+function createForecast(placeName) {
+  const baseWeather = generateWeather(placeName);
 
-  hetauda: {
-    name: "Hetauda",
-    temperature: 28,
-    condition: "Partly Cloudy",
-    icon: "🌤️",
-    feelsLike: 30,
-    humidity: 57,
-    wind: 3.4,
-    pressure: 1012,
-  },
-};
-
-function createWeatherDays(place) {
-  const conditions = [
+  return [
     {
-      condition: "Sunny",
-      icon: "☀️",
-      change: 0,
+      day: "Today",
+      date: "Today",
+      ...baseWeather,
     },
+
     {
+      day: "Tue",
+      date: "Tomorrow",
+      ...baseWeather,
+      temperature: baseWeather.temperature - 2,
+      feelsLike: baseWeather.feelsLike - 2,
       condition: "Rainy",
       icon: "🌧️",
-      change: -3,
     },
+
     {
+      day: "Wed",
+      date: "In 2 days",
+      ...baseWeather,
+      temperature: baseWeather.temperature + 1,
+      feelsLike: baseWeather.feelsLike + 1,
       condition: "Cloudy",
       icon: "☁️",
-      change: -1,
     },
+
     {
+      day: "Thu",
+      date: "In 3 days",
+      ...baseWeather,
+      temperature: baseWeather.temperature + 3,
+      feelsLike: baseWeather.feelsLike + 3,
       condition: "Partly Cloudy",
       icon: "🌤️",
-      change: 2,
     },
+
     {
+      day: "Fri",
+      date: "In 4 days",
+      ...baseWeather,
+      temperature: baseWeather.temperature + 2,
+      feelsLike: baseWeather.feelsLike + 2,
       condition: "Sunny",
       icon: "☀️",
-      change: 3,
     },
   ];
-
-  return conditions.map((weather, index) => ({
-    day:
-      index === 0
-        ? "Today"
-        : new Date(
-            Date.now() + index * 24 * 60 * 60 * 1000
-          ).toLocaleDateString("en-US", {
-            weekday: "short",
-          }),
-
-    date: new Date(
-      Date.now() + index * 24 * 60 * 60 * 1000
-    ).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-
-    city: place.name,
-    country: "Nepal",
-
-    temperature: place.temperature + weather.change,
-
-    feelsLike:
-      place.feelsLike + weather.change,
-
-    condition: weather.condition,
-
-    icon: weather.icon,
-
-    humidity: Math.max(
-      30,
-      Math.min(90, place.humidity + index * 4)
-    ),
-
-    wind: Number(
-      (place.wind + index * 0.4).toFixed(1)
-    ),
-
-    pressure: place.pressure + index,
-
-  }));
 }
 
 function App() {
   const [selectedDay, setSelectedDay] = useState(0);
 
+  // Default place
   const [weatherData, setWeatherData] = useState(
-    createWeatherDays(nepalPlaces.kathmandu)
+    createForecast("Kathmandu")
   );
 
   const handleSearch = (searchText) => {
-    const search = searchText.trim().toLowerCase();
+    const place = searchText.trim();
 
-    if (!search) {
+    if (!place) {
       return;
     }
 
-    /*
-      First check our Nepal city data.
-    */
-    const foundPlace = nepalPlaces[search];
+    // Generate weather for ANY place
+    const newWeather = createForecast(place);
 
-    if (foundPlace) {
-      setWeatherData(createWeatherDays(foundPlace));
-      setSelectedDay(0);
-      return;
-    }
+    setWeatherData(newWeather);
 
-    /*
-      Prototype fallback:
-      If the user enters another Nepal place
-      that is not in our list, we still display
-      a prototype weather result for that place.
-    */
-
-    const formattedName = searchText
-      .trim()
-      .split(" ")
-      .map(
-        (word) =>
-          word.charAt(0).toUpperCase() +
-          word.slice(1).toLowerCase()
-      )
-      .join(" ");
-
-    const fallbackPlace = {
-      name: formattedName,
-      temperature: 26,
-      condition: "Partly Cloudy",
-      icon: "🌤️",
-      feelsLike: 27,
-      humidity: 58,
-      wind: 3.1,
-      pressure: 1012,
-    };
-
-    setWeatherData(
-      createWeatherDays(fallbackPlace)
-    );
-
+    // Always show Today after searching
     setSelectedDay(0);
   };
 

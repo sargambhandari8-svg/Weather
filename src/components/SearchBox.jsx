@@ -16,7 +16,7 @@ function SearchBox({ onSearch }) {
     >
       <input
         type="text"
-        placeholder="Search Nepal city..."
+        placeholder="Search any city or country..."
         value={city}
         onChange={(event) =>
           setCity(event.target.value)
